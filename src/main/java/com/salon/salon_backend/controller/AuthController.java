@@ -97,12 +97,35 @@ private final Map<String, String>
    //     return "OTP Sent To Email";
    // }
 
+//     @PostMapping("/signup")
+// public String signup(@RequestBody String body) {
+
+//     System.out.println("BODY = " + body);
+
+//     return "OK";
+// }
+
     @PostMapping("/signup")
-public String signup(@RequestBody String body) {
+public String signup(@RequestBody SignupRequest request) {
 
-    System.out.println("BODY = " + body);
+    User user = new User();
 
-    return "OK";
+    user.setName(request.getName());
+    user.setEmail(request.getEmail());
+    user.setPassword(passwordEncoder.encode(request.getPassword()));
+    user.setRole(request.getRole());
+
+    user.setVerified(false);
+
+    String otp = generateOtp();
+    user.setOtp(otp);
+    user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+
+    userRepository.save(user);
+
+    emailService.sendOtpEmail(user.getEmail(), otp);
+
+    return "OTP Sent";
 }
    //  // LOGIN API
 @PostMapping("/login")
