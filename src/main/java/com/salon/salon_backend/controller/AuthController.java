@@ -41,63 +41,70 @@ private final Map<String, String>
     otpCache = new HashMap<>();
 
    // SIGNUP API
-   @PostMapping("/signup")
-   public String signup(
-           @RequestBody User user
-   ) {
+   // @PostMapping("/signup")
+   // public String signup(
+   //         @RequestBody User user
+   // ) {
 
-       // EMAIL EXISTS
+   //     // EMAIL EXISTS
 
-       if (
-               userRepository
-                       .findByEmail(
-                               user.getEmail()
-                       )
-                       .isPresent()
-       ) {
+   //     if (
+   //             userRepository
+   //                     .findByEmail(
+   //                             user.getEmail()
+   //                     )
+   //                     .isPresent()
+   //     ) {
 
-           return "Email already exists";
-       }
+   //         return "Email already exists";
+   //     }
 
-       // PASSWORD ENCRYPT
+   //     // PASSWORD ENCRYPT
 
-       user.setPassword(
+   //     user.setPassword(
 
-               passwordEncoder.encode(
-                       user.getPassword()
-               )
-       );
+   //             passwordEncoder.encode(
+   //                     user.getPassword()
+   //             )
+   //     );
 
-       // GENERATE OTP
+   //     // GENERATE OTP
 
-       String otp =
-               generateOtp();
+   //     String otp =
+   //             generateOtp();
 
-       user.setOtp(otp);
+   //     user.setOtp(otp);
 
-       user.setVerified(false);
+   //     user.setVerified(false);
 
-       user.setOtpExpiry(
+   //     user.setOtpExpiry(
 
-               java.time.LocalDateTime.now()
-                       .plusMinutes(5)
-       );
+   //             java.time.LocalDateTime.now()
+   //                     .plusMinutes(5)
+   //     );
 
-       // SAVE USER
+   //     // SAVE USER
 
-       userRepository.save(user);
+   //     userRepository.save(user);
 
-       // SEND EMAIL
+   //     // SEND EMAIL
 
-       emailService.sendOtpEmail(
-               user.getEmail(),
-               otp
-       );
+   //     emailService.sendOtpEmail(
+   //             user.getEmail(),
+   //             otp
+   //     );
 
-       return "OTP Sent To Email";
-   }
+   //     return "OTP Sent To Email";
+   // }
 
-    // LOGIN API
+    @PostMapping("/signup")
+public String signup(@RequestBody String body) {
+
+    System.out.println("BODY = " + body);
+
+    return "OK";
+}
+   //  // LOGIN API
 @PostMapping("/login")
 public Map<String, String> login(
         @RequestBody LoginRequest request
