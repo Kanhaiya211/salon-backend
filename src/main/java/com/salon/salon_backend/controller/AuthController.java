@@ -40,62 +40,62 @@ public class AuthController {
 private final Map<String, String>
     otpCache = new HashMap<>();
 
-//    // SIGNUP API
-//    @PostMapping("/signup")
-//    public String signup(
-//            @RequestBody User user
-//    ) {
-//
-//        // EMAIL EXISTS
-//
-//        if (
-//                userRepository
-//                        .findByEmail(
-//                                user.getEmail()
-//                        )
-//                        .isPresent()
-//        ) {
-//
-//            return "Email already exists";
-//        }
-//
-//        // PASSWORD ENCRYPT
-//
-//        user.setPassword(
-//
-//                passwordEncoder.encode(
-//                        user.getPassword()
-//                )
-//        );
-//
-//        // GENERATE OTP
-//
-//        String otp =
-//                generateOtp();
-//
-//        user.setOtp(otp);
-//
-//        user.setVerified(false);
-//
-//        user.setOtpExpiry(
-//
-//                java.time.LocalDateTime.now()
-//                        .plusMinutes(5)
-//        );
-//
-//        // SAVE USER
-//
-//        userRepository.save(user);
-//
-//        // SEND EMAIL
-//
-//        emailService.sendOtpEmail(
-//                user.getEmail(),
-//                otp
-//        );
-//
-//        return "OTP Sent To Email";
-//    }
+   // SIGNUP API
+   @PostMapping("/signup")
+   public String signup(
+           @RequestBody User user
+   ) {
+
+       // EMAIL EXISTS
+
+       if (
+               userRepository
+                       .findByEmail(
+                               user.getEmail()
+                       )
+                       .isPresent()
+       ) {
+
+           return "Email already exists";
+       }
+
+       // PASSWORD ENCRYPT
+
+       user.setPassword(
+
+               passwordEncoder.encode(
+                       user.getPassword()
+               )
+       );
+
+       // GENERATE OTP
+
+       String otp =
+               generateOtp();
+
+       user.setOtp(otp);
+
+       user.setVerified(false);
+
+       user.setOtpExpiry(
+
+               java.time.LocalDateTime.now()
+                       .plusMinutes(5)
+       );
+
+       // SAVE USER
+
+       userRepository.save(user);
+
+       // SEND EMAIL
+
+       emailService.sendOtpEmail(
+               user.getEmail(),
+               otp
+       );
+
+       return "OTP Sent To Email";
+   }
 
     // LOGIN API
 @PostMapping("/login")
@@ -180,58 +180,58 @@ public Map<String, String> login(
         );
     }
     
-    @PostMapping("/send-signup-otp")
-    public String sendSignupOtp(
+    // @PostMapping("/send-signup-otp")
+    // public String sendSignupOtp(
 
-            @RequestBody SignupRequest request
-    ) {
+    //         @RequestBody SignupRequest request
+    // ) {
 
-        // EMAIL EXISTS
+    //     // EMAIL EXISTS
 
-        if (
-                userRepository
-                        .findByEmail(
-                                request.getEmail()
-                        )
-                        .isPresent()
-        ) {
+    //     if (
+    //             userRepository
+    //                     .findByEmail(
+    //                             request.getEmail()
+    //                     )
+    //                     .isPresent()
+    //     ) {
 
-            return "Email already exists";
-        }
+    //         return "Email already exists";
+    //     }
 
-        // GENERATE OTP
+    //     // GENERATE OTP
 
-        String otp =
-                generateOtp();
+    //     String otp =
+    //             generateOtp();
 
-        // STORE TEMP DATA
+    //     // STORE TEMP DATA
 
-        signupCache.put(
-                request.getEmail(),
-                request
-        );
+    //     signupCache.put(
+    //             request.getEmail(),
+    //             request
+    //     );
 
-        otpCache.put(
-                request.getEmail(),
-                otp
-        );
-        otpExpiryCache.put(
+    //     otpCache.put(
+    //             request.getEmail(),
+    //             otp
+    //     );
+    //     otpExpiryCache.put(
 
-                request.getEmail(),
+    //             request.getEmail(),
 
-                LocalDateTime.now()
-                        .plusMinutes(5)
-        );
+    //             LocalDateTime.now()
+    //                     .plusMinutes(5)
+    //     );
 
-        // SEND EMAIL
+    //     // SEND EMAIL
 
-        emailService.sendOtpEmail(
-                request.getEmail(),
-                otp
-        );
+    //     emailService.sendOtpEmail(
+    //             request.getEmail(),
+    //             otp
+    //     );
 
-        return "OTP Sent";
-    }
+    //     return "OTP Sent";
+    // }
     
     @PostMapping("/verify-signup-otp")
     public String verifySignupOtp(
