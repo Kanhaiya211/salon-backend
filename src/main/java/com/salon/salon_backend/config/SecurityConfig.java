@@ -90,7 +90,8 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/auth/**",
-                                "/invoice/**"
+                                "/invoice/**",
+                                "/test/**"
                         ).permitAll()
 
                         .requestMatchers(
