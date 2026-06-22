@@ -91,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/**",
                                 "/invoice/**",
+                                "/signup**/",
                                 "/test/**"
                         ).permitAll()
 
