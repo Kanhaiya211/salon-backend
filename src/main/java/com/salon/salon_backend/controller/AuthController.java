@@ -34,11 +34,11 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
     
-    private final Map<String, SignupRequest>
-    signupCache = new HashMap<>();
+//     private final Map<String, SignupRequest>
+//     signupCache = new HashMap<>();
 
-private final Map<String, String>
-    otpCache = new HashMap<>();
+// private final Map<String, String>
+//     otpCache = new HashMap<>();
 
    // SIGNUP API
    // @PostMapping("/signup")
