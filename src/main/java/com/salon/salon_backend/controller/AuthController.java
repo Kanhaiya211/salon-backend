@@ -105,8 +105,15 @@ private final Map<String, String>
 //     return "OK";
 // }
 
-    @PostMapping("/signup")
+   @PostMapping("/signup")
 public String signup(@RequestBody SignupRequest request) {
+
+    // Check if email already exists
+    if (userRepository.existsByEmail(request.getEmail())) {
+        return "Email already registered";
+    }
+
+    String otp = generateOtp();
 
     User user = new User();
 
@@ -116,14 +123,15 @@ public String signup(@RequestBody SignupRequest request) {
     user.setRole(request.getRole());
 
     user.setVerified(false);
-
-    String otp = generateOtp();
     user.setOtp(otp);
     user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
 
     userRepository.save(user);
 
-    emailService.sendOtpEmail(user.getEmail(), otp);
+    emailService.sendOtpEmail(
+            user.getEmail(),
+            otp
+    );
 
     return "OTP Sent";
 }
@@ -263,128 +271,49 @@ public Map<String, String> login(
     //     return "OTP Sent";
     // }
     
-    @PostMapping("/verify-signup-otp")
-    public String verifySignupOtp(
+   @PostMapping("/verify-signup-otp")
+public String verifySignupOtp(
+        @RequestBody SignupRequest request
+) {
 
-            @RequestBody SignupRequest request
-    ) {
+    User user = userRepository
+            .findByEmail(request.getEmail())
+            .orElse(null);
 
-        // CHECK STORED OTP
+    if (user == null) {
+        return "User Not Found";
+    }
 
-        String storedOtp =
-                otpCache.get(
-                        request.getEmail()
-                );
-        LocalDateTime expiryTime =
-                otpExpiryCache.get(
-                        request.getEmail()
-                );
+    if (user.isVerified()) {
+        return "User Already Verified";
+    }
 
-        if (
+    if (user.getOtp() == null) {
+        return "OTP Expired";
+    }
 
-                expiryTime == null
+    if (user.getOtpExpiry() == null ||
+            LocalDateTime.now().isAfter(user.getOtpExpiry())) {
 
-                ||
-
-                LocalDateTime.now()
-                        .isAfter(expiryTime)
-
-        ) {
-
-            otpCache.remove(
-                    request.getEmail()
-            );
-
-            signupCache.remove(
-                    request.getEmail()
-            );
-
-            otpExpiryCache.remove(
-                    request.getEmail()
-            );
-
-            return "OTP Expired";
-        }
-
-        if (
-                storedOtp == null
-        ) {
-
-            return "OTP Expired";
-        }
-
-        // VERIFY OTP
-
-        if (
-                !storedOtp.equals(
-                        request.getOtp()
-                )
-        ) {
-
-            return "Invalid OTP";
-        }
-
-        // GET TEMP SIGNUP DATA
-
-        SignupRequest signupData =
-                signupCache.get(
-                        request.getEmail()
-                );
-
-        if (
-                signupData == null
-        ) {
-
-            return "Signup Data Not Found";
-        }
-
-        // CREATE USER
-
-        User user = new User();
-
-        user.setName(
-                signupData.getName()
-        );
-
-        user.setEmail(
-                signupData.getEmail()
-        );
-
-        user.setPassword(
-
-                passwordEncoder.encode(
-                        signupData.getPassword()
-                )
-        );
-
-        user.setRole(
-                signupData.getRole()
-        );
-
-        user.setVerified(true);
-
-        // SAVE USER
-
+        user.setOtp(null);
+        user.setOtpExpiry(null);
         userRepository.save(user);
 
-        // CLEAR CACHE
-
-        signupCache.remove(
-                request.getEmail()
-        );
-
-        otpCache.remove(
-                request.getEmail()
-        );
-        otpExpiryCache.remove(
-                request.getEmail()
-        );
-
-        return "Account Created Successfully";
+        return "OTP Expired";
     }
-    private final Map<String, String>
-    forgotPasswordOtpCache =
-    new HashMap<>();
+
+    if (!user.getOtp().equals(request.getOtp())) {
+        return "Invalid OTP";
+    }
+
+    user.setVerified(true);
+    user.setOtp(null);
+    user.setOtpExpiry(null);
+
+    userRepository.save(user);
+
+    return "Email Verified Successfully";
+}
     
     @PostMapping("/forgot-password/send-otp")
     public String sendForgotPasswordOtp(
