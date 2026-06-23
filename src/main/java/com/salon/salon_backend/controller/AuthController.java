@@ -412,46 +412,34 @@ public String verifySignupOtp(
     new HashMap<>();
     
     @PostMapping("/resend-signup-otp")
-    public String resendSignupOtp(
+public String resendSignupOtp(
+        @RequestBody SignupRequest request
+) {
 
-            @RequestBody SignupRequest request
-    ) {
+    User user = userRepository
+            .findByEmail(request.getEmail())
+            .orElse(null);
 
-        SignupRequest signupData =
-                signupCache.get(
-                        request.getEmail()
-                );
-
-        if (
-                signupData == null
-        ) {
-
-            return "Signup Session Expired";
-        }
-
-        String otp =
-                generateOtp();
-
-        otpCache.put(
-                request.getEmail(),
-                otp
-        );
-
-        otpExpiryCache.put(
-
-                request.getEmail(),
-
-                LocalDateTime.now()
-                        .plusMinutes(5)
-        );
-
-        emailService.sendOtpEmail(
-
-                request.getEmail(),
-
-                otp
-        );
-
-        return "OTP Resent";
+    if (user == null) {
+        return "User Not Found";
     }
+
+    if (user.isVerified()) {
+        return "User Already Verified";
+    }
+
+    String otp = generateOtp();
+
+    user.setOtp(otp);
+    user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+
+    userRepository.save(user);
+
+    emailService.sendOtpEmail(
+            user.getEmail(),
+            otp
+    );
+
+    return "OTP Resent Successfully";
+}
 }
