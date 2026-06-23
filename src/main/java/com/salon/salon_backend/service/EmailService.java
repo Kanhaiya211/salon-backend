@@ -69,6 +69,7 @@ public class EmailService {
                     "Brevo Error : " + response.getBody()
             );
         }
+    }
         // ===========================
 // OTP EMAIL
 // ===========================
