@@ -33,13 +33,9 @@ public class AuthController {
 
     @Autowired
     private EmailService emailService;
-    
-//     private final Map<String, SignupRequest>
-//     signupCache = new HashMap<>();
 
-// private final Map<String, String>
-//     otpCache = new HashMap<>();
-
+    private final Map<String, String> forgotPasswordOtpCache =
+        new HashMap<>();
    // SIGNUP API
    // @PostMapping("/signup")
    // public String signup(
@@ -105,10 +101,9 @@ public class AuthController {
 //     return "OK";
 // }
 
-   @PostMapping("/signup")
+  @PostMapping("/signup")
 public String signup(@RequestBody SignupRequest request) {
 
-    // Check if email already exists
     if (userRepository.existsByEmail(request.getEmail())) {
         return "Email already registered";
     }
@@ -133,7 +128,7 @@ public String signup(@RequestBody SignupRequest request) {
             otp
     );
 
-    return "OTP Sent";
+    return "OTP Sent Successfully";
 }
    //  // LOGIN API
 @PostMapping("/login")
@@ -218,60 +213,9 @@ public Map<String, String> login(
         );
     }
     
-    // @PostMapping("/send-signup-otp")
-    // public String sendSignupOtp(
-
-    //         @RequestBody SignupRequest request
-    // ) {
-
-    //     // EMAIL EXISTS
-
-    //     if (
-    //             userRepository
-    //                     .findByEmail(
-    //                             request.getEmail()
-    //                     )
-    //                     .isPresent()
-    //     ) {
-
-    //         return "Email already exists";
-    //     }
-
-    //     // GENERATE OTP
-
-    //     String otp =
-    //             generateOtp();
-
-    //     // STORE TEMP DATA
-
-    //     signupCache.put(
-    //             request.getEmail(),
-    //             request
-    //     );
-
-    //     otpCache.put(
-    //             request.getEmail(),
-    //             otp
-    //     );
-    //     otpExpiryCache.put(
-
-    //             request.getEmail(),
-
-    //             LocalDateTime.now()
-    //                     .plusMinutes(5)
-    //     );
-
-    //     // SEND EMAIL
-
-    //     emailService.sendOtpEmail(
-    //             request.getEmail(),
-    //             otp
-    //     );
-
-    //     return "OTP Sent";
-    // }
+   
     
-   @PostMapping("/verify-signup-otp")
+  @PostMapping("/verify-signup-otp")
 public String verifySignupOtp(
         @RequestBody SignupRequest request
 ) {
@@ -407,9 +351,7 @@ public String verifySignupOtp(
 
         return "Password Reset Successful";
     }
-    private final Map<String, LocalDateTime>
-    otpExpiryCache =
-    new HashMap<>();
+   
     
     @PostMapping("/resend-signup-otp")
 public String resendSignupOtp(
